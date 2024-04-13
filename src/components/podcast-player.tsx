@@ -1,8 +1,16 @@
+import { PaperMetadata } from "@/app/api/submit/types";
 import { Progress } from "@/components/ui/progress"
 import { JSX, SVGProps } from "react";
 
-export function PodcastPlayer() {
+interface PodcastPlayerProps {
+  metadata: PaperMetadata | null;
+  audioUrls: string[];
+  handleAudioEnd: () => void; 
+  currentAudioIndex: number;
+}
+export function PodcastPlayer({ metadata, audioUrls, handleAudioEnd, currentAudioIndex }: PodcastPlayerProps) {
 
+  
   return (
     <div className="bg-black text-white relative font-mono">
       <svg width="500" height="300" xmlns="http://www.w3.org/2000/svg">
@@ -11,8 +19,8 @@ export function PodcastPlayer() {
       <div className="absolute inset-0 flex flex-col justify-between p-8">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-sm font-bold">LATENT SPACE: THE AI ENGINEER PODCAST</h1>
-            <p className="text-xs mt-2">Practitioners talking LLMS, CodeGen, Agents, Multimodality, AI UX, GPU in...</p>
+            <h1 className="text-sm font-bold">{metadata && metadata.title.toUpperCase()}</h1>
+            <p className="text-xs mt-2">{metadata && metadata.authors.join(', ')}</p>
           </div>
           <div className="space-y-4">
             <UploadIcon className="text-white w-4 h-4" />
@@ -20,14 +28,9 @@ export function PodcastPlayer() {
         </div>
         <div>
           <div className="flex items-center justify-between">
-            <button className="w-6 h-6 mr-5 rounded-full bg-white flex items-center justify-center">
-              <PlayIcon className="text-black w-3 h-3" />
-            </button>
-            <span className="text-sm">0:00</span>
-            <div className="flex-1 mx-4">
-              <Progress className="w-full" value={40} />
-            </div>
-            <span className="text-sm">-56:19</span>
+            <audio controls autoPlay src={audioUrls[currentAudioIndex]} onEnded={handleAudioEnd} style={{ marginTop: '10px', width: "100%" }}>
+                          Your browser does not support the audio element.
+            </audio>
 
           </div>
        </div>

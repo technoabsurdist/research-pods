@@ -15,6 +15,7 @@ export async function POST(request: Request) {
     if (!data.link) {
         return NextResponse.json({ message: 'Link is required' }, { status: 400 })
     }
+    console.log("Processing Arxiv: ", data.link); 
 
     const { link } = data
     if (!isArxivLink(link)) {
@@ -34,13 +35,12 @@ export async function POST(request: Request) {
     }
     const paper = {metadata, contents}
 
-    const audioFilePath = await convertToAudio(paper);
-
-    const fileBuffer = fs.readFileSync(audioFilePath);
-
+    const audioUrls = await convertToAudio(paper);
+    
     const headers = new Headers({
-        'Content-Type': 'audio/mpeg',
-        'Content-Length': fileBuffer.length.toString()
+        'Content-Type': 'application/json'
     });
-    return new NextResponse(fileBuffer, { headers: headers });
+
+    console.log("==> Completed! Audio URLs: ", audioUrls)
+    return new NextResponse(JSON.stringify({ audioUrls, metadata }), { headers });
 }

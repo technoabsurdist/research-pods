@@ -1,11 +1,14 @@
 import { SetStateAction, useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { PaperMetadata } from '@/app/api/submit/types';
 
 interface SearchBarProps {
-  handleAudioUrl: (url: string) => void; 
+  handleAudioUrls: (urls: string[]) => void;
+  handleMetadata: (metadata: PaperMetadata) => void; 
 }
-export function SearchBar({handleAudioUrl}: SearchBarProps) {
+
+export function SearchBar({handleAudioUrls, handleMetadata}: SearchBarProps) {
   const [link, setLink] = useState('');
 
   const handleInputChange = (event: { target: { value: SetStateAction<string>; }; }) => {
@@ -26,12 +29,12 @@ export function SearchBar({handleAudioUrl}: SearchBarProps) {
         throw new Error('Network response was not ok');
       }
 
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      handleAudioUrl(url);
+      const data = await response.json();
+      handleAudioUrls(data.audioUrls);
+      handleMetadata(data.metadata);
     } catch (error) {
       console.error('Error submitting link:', error);
-      handleAudioUrl('');
+      handleAudioUrls([]);
     }
   };
 
@@ -50,3 +53,4 @@ export function SearchBar({handleAudioUrl}: SearchBarProps) {
     </div>
   );
 }
+

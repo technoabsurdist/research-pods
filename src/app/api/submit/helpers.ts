@@ -1,6 +1,6 @@
 import axios from "axios";
 import { parseStringPromise } from "xml2js";
-import fs, { promises, readFileSync } from 'fs';
+import fs, { promises as fsPromises } from 'fs';
 import {pdfToPages} from 'pdf-ts';
 import path from "path";
 import OpenAI from "openai";
@@ -9,27 +9,64 @@ import { LinkType, Paper, PaperMetadata } from "./types";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY; 
 
-export async function convertToAudio(paper: Paper) {
-    const metadataSpeech = `The title of this paper is ${paper.metadata.title}. It was published on ${formatForSpeech(paper.metadata.publishedDate)}. The authors of this paper are: ${paper.metadata.authors}. `
-    const speechFile = path.resolve("./speech.mp3");
-    dotenv.config();
-    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-    const mp3 = await openai.audio.speech.create({
-        model: "tts-1-hd",
-        voice: "onyx",
-        input: metadataSpeech,
-    });
-    const buffer = Buffer.from(await mp3.arrayBuffer());
-    await fs.promises.writeFile(speechFile, buffer);
-    return speechFile;
+export async function convertToAudio(paper: Paper): Promise<string[]> {
+    const audioDir = path.resolve('./public/audio');
+    await fsPromises.mkdir(audioDir, { recursive: true });
+
+    const audioUrls: string[] = [];
+
+    // Metadata audio generation
+    const metadataSpeech = `The title of this paper is ${paper.metadata.title}. It was published on ${formatForSpeech(paper.metadata.publishedDate)}. The authors of this paper are: ${paper.metadata.authors}. `;
+    const metadataAudioBuffers = await synthesizeSpeech(metadataSpeech);
+    for (const [index, buffer] of metadataAudioBuffers.entries()) {
+        const metadataFileName = `metadata_${index}.mp3`;
+        const metadataFilePath = path.join(audioDir, metadataFileName);
+        await fsPromises.writeFile(metadataFilePath, buffer);
+        audioUrls.push(`/audio/${metadataFileName}`);
+    }
+
+    // Page audio generation
+    for (const page of paper.contents) {
+        if (page.page < 2) { // Assuming this condition still applies
+            const pageAudioBuffers = await synthesizeSpeech(`Page ${page.page}: ${page.text}`);
+            for (const [index, buffer] of pageAudioBuffers.entries()) {
+                const pageFileName = `page_${page.page}_${index}.mp3`;
+                const pageFilePath = path.join(audioDir, pageFileName);
+                await fsPromises.writeFile(pageFilePath, buffer);
+                audioUrls.push(`/audio/${pageFileName}`);
+            }
+        }
+    }
+
+    return audioUrls;
 }
 
+
+async function synthesizeSpeech(text: string): Promise<Buffer[]> {
+    dotenv.config();
+    const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
+    const maxCharacters = 4096;
+    let buffers: Buffer[] = [];
+
+    // chunks -- 4096 characters
+    for (let i = 0; i < text.length; i += maxCharacters) {
+        const chunk = text.substring(i, i + maxCharacters);
+        const response = await openai.audio.speech.create({
+            model: "tts-1", // change to tts-1-hd for production
+            voice: "onyx",
+            input: chunk,
+        });
+        const buffer = Buffer.from(await response.arrayBuffer());
+        buffers.push(buffer);
+    }
+
+    return buffers;
+}
 
 export async function getArxivMetadata(arxivId: string): Promise<PaperMetadata | null> {
     try { 
         const response = await axios.get(`http://export.arxiv.org/api/query?id_list=${arxivId}`);
         const result = await parseStringPromise(response.data);
-        console.log("result: ", result)
         const entry = result.feed.entry[0]
         const title = entry.title[0].trim();
         const authors = entry.author.map((author: any) => author.name[0]);
@@ -64,9 +101,8 @@ export async function downloadArxivPaper(arxivUrl: string, type: LinkType): Prom
 }
 
 export async function extractTextFromPaper(paperFilePath: string): Promise<{page: number, text: string}[]> {
-    const pdf = await promises.readFile(paperFilePath);
+    const pdf = await fsPromises.readFile(paperFilePath);
     const pages = await pdfToPages(pdf);
-    console.log(pages);
     return pages;
 }
 
