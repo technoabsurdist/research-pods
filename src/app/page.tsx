@@ -6,12 +6,18 @@ import { useState } from 'react'
 
 export default function Home() {
   const [processed, setProcessed] = useState(false)
+  const [audioUrl, setAudioUrl] = useState('')
   return (
     <>
      <main className="flex min-h-screen flex-col items-center justify-center space-y-10">
       <div className="w-[500px] justify-center font-mono text-sm lg:flex">
-        <SearchBar />
+        <SearchBar handleAudioUrl={(url: string) => setAudioUrl(url)}/>
       </div>
+      {audioUrl && (
+        <audio controls src={audioUrl} style={{ marginTop: '10px' }}>
+          Your browser does not support the audio element.
+        </audio>
+      )}
        {processed && <PodcastPlayer />}
       <Footer /> 
     </main>
