@@ -16,18 +16,18 @@ export async function convertToAudio(paper: Paper): Promise<string[]> {
     const audioUrls: string[] = [];
 
     // Metadata audio generation
-    const metadataSpeech = `The title of this paper is ${paper.metadata.title}. It was published on ${formatForSpeech(paper.metadata.publishedDate)}. The authors of this paper are: ${paper.metadata.authors}. `;
-    const metadataAudioBuffers = await synthesizeSpeech(metadataSpeech);
-    for (const [index, buffer] of metadataAudioBuffers.entries()) {
-        const metadataFileName = `metadata_${index}.mp3`;
-        const metadataFilePath = path.join(audioDir, metadataFileName);
-        await fsPromises.writeFile(metadataFilePath, buffer);
-        audioUrls.push(`/audio/${metadataFileName}`);
-    }
+    // const metadataSpeech = `The title of this paper is ${paper.metadata.title}. It was published on ${formatForSpeech(paper.metadata.publishedDate)}. The authors of this paper are: ${paper.metadata.authors}. `;
+    // const metadataAudioBuffers = await synthesizeSpeech(metadataSpeech);
+    // for (const [index, buffer] of metadataAudioBuffers.entries()) {
+    //     const metadataFileName = `metadata_${index}.mp3`;
+    //     const metadataFilePath = path.join(audioDir, metadataFileName);
+    //     await fsPromises.writeFile(metadataFilePath, buffer);
+    //     audioUrls.push(`/audio/${metadataFileName}`);
+    // }
 
     // Page audio generation
     for (const page of paper.contents) {
-        if (page.page < 2) { // Assuming this condition still applies
+        if (page.page < 4) { // Assuming this condition still applies
             const pageAudioBuffers = await synthesizeSpeech(`Page ${page.page}: ${page.text}`);
             for (const [index, buffer] of pageAudioBuffers.entries()) {
                 const pageFileName = `page_${page.page}_${index}.mp3`;

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'; 
 import { convertToAudio, downloadArxivPaper, extractTextFromPaper, getArxivMetadata, isArxivLink } from './helpers';
 import { LinkType } from './types';
 

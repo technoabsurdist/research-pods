@@ -28,6 +28,7 @@ export function PodcastPlayer({ metadata, audioUrls, handleAudioEnd, currentAudi
         </div>
         <div>
           <div className="flex items-center justify-between">
+            <p className="text-xs justify-left mt-1">page {currentAudioIndex+1} / {audioUrls.length - 1}</p>
             <audio controls autoPlay src={audioUrls[currentAudioIndex]} onEnded={handleAudioEnd} style={{ marginTop: '10px', width: "100%" }}>
                           Your browser does not support the audio element.
             </audio>
