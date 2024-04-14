@@ -2,6 +2,7 @@
 <div align="center">
     <img src="./public/podcast.svg" width="300" height="300" />
     <h1>Arxiv Research Pods</h1>
+    <h5>Convert Arxiv Papers into multi-chapter Podcasts</h5>
 </div>
 
 

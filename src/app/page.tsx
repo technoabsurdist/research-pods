@@ -25,7 +25,7 @@ export default function Home() {
         <>
             <main className="flex min-h-screen flex-col items-center justify-center space-y-10">
               <PodcastLogoSVG />
-              <h1 className='font-mono text-sm font-bold tracking-widest'>Convert Arxiv Papers to Multi-chapter Podcasts</h1>
+              <h1 className='font-mono text-sm font-bold tracking-widest'>Convert Arxiv Papers into Multi-chapter Podcasts</h1>
                 <div className="w-[500px] justify-center font-mono text-sm lg:flex">
                     <SearchBar 
                       handleAudioUrls={(urls: string[]) => {
