@@ -32,7 +32,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 Usage should look something like this: 
 
 <div align="center">
-    <img src="./public/screenshot.png" width="700" height="500" />
+    <img src="./public/podcasts.jpeg" width="700" height="500" />
 </div>
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
