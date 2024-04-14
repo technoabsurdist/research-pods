@@ -5,17 +5,19 @@ import { PaperMetadata } from '@/app/api/submit/types';
 
 interface SearchBarProps {
   handleAudioUrls: (urls: string[]) => void;
-  handleMetadata: (metadata: PaperMetadata) => void; 
+  handleMetadata: (metadata: PaperMetadata) => void;
+  loading: boolean; 
+  handleLoading: (loading: boolean) => void; 
 }
 
-export function SearchBar({handleAudioUrls, handleMetadata}: SearchBarProps) {
+export function SearchBar({handleAudioUrls, handleMetadata, loading, handleLoading}: SearchBarProps) {
   const [link, setLink] = useState('');
-
   const handleInputChange = (event: { target: { value: SetStateAction<string>; }; }) => {
     setLink(event.target.value);
   };
 
   const submitLink = async () => {
+    handleLoading(true);
     try {
       const response = await fetch('/api/submit', {
         method: 'POST',
@@ -35,6 +37,8 @@ export function SearchBar({handleAudioUrls, handleMetadata}: SearchBarProps) {
     } catch (error) {
       console.error('Error submitting link:', error);
       handleAudioUrls([]);
+    } finally {
+      handleLoading(false)
     }
   };
 
@@ -43,12 +47,12 @@ export function SearchBar({handleAudioUrls, handleMetadata}: SearchBarProps) {
       <div className="flex w-full max-w-lg items-center space-x-4">
         <Input
           aria-describedby="file-description"
-          placeholder="Enter arxiv link to convert"
+          placeholder="Enter arxiv link or .pdf"
           type="text"
           onChange={handleInputChange}
           value={link}
         />
-        <Button onClick={submitLink} type="submit">Convert</Button>
+        <Button disabled={loading ? true : false} onClick={submitLink} type="submit">Convert</Button>
       </div>
     </div>
   );

@@ -27,9 +27,9 @@ export function PodcastPlayer({ metadata, audioUrls, handleAudioEnd, currentAudi
           </div>
         </div>
         <div>
-          <div className="flex items-center justify-between">
-            <p className="text-xs justify-left mt-1">page {currentAudioIndex+1} / {audioUrls.length - 1}</p>
-            <audio controls autoPlay src={audioUrls[currentAudioIndex]} onEnded={handleAudioEnd} style={{ marginTop: '10px', width: "100%" }}>
+          <div className="flex items-center justify-right">
+            <p className="text-sm justify-left mt-1">page {currentAudioIndex+1} / {audioUrls.length - 1}</p>
+            <audio controls autoPlay src={audioUrls[currentAudioIndex]} onEnded={handleAudioEnd} style={{ marginTop: '10px', width: "80%" }}>
                           Your browser does not support the audio element.
             </audio>
 
@@ -40,24 +40,6 @@ export function PodcastPlayer({ metadata, audioUrls, handleAudioEnd, currentAudi
   )
 }
 
-function PlayIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="5 3 19 12 5 21 5 3" />
-    </svg>
-  )
-}
 
 function UploadIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
